@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { color-scheme: dark; }
+/* 'dark' is a variant, not something to @apply */
+html { @apply bg-slatebg text-slate-100; }
+body { @apply min-h-screen; }
+
+/* Scrollbar (webkit) */
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-thumb { background: #2c3b59; border-radius: 8px; }
+*::-webkit-scrollbar-track { background: transparent; }
+
+.prose pre, pre, code {
+  @apply bg-slate-800 text-slate-100 rounded-lg;
+}
+.markdown p { @apply leading-7; }
+.markdown h1, .markdown h2, .markdown h3 { @apply font-semibold mt-6 mb-3; }
+.markdown ul { @apply list-disc ml-6; }
+.markdown ol { @apply list-decimal ml-6; }
