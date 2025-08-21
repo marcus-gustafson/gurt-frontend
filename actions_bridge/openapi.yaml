@@ -1,0 +1,163 @@
+openapi: 3.1.0
+info:
+  title: Actions Bridge API
+  version: 1.0.0
+servers:
+  - url: https://<YOUR_TUNNEL_DOMAIN>
+components:
+  securitySchemes:
+    BridgeToken:
+      type: apiKey
+      in: header
+      name: X-Bridge-Token
+paths:
+  /run:
+    post:
+      security:
+        - BridgeToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                cmd:
+                  type: string
+                  enum: [test, lint, typecheck, e2e-real]
+              required: [cmd]
+      responses:
+        '200':
+          description: Command result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  code:
+                    type: integer
+                  output_tail:
+                    type: string
+  /health:
+    get:
+      responses:
+        '200':
+          description: Health check
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+  /read:
+    get:
+      security:
+        - BridgeToken: []
+      parameters:
+        - in: query
+          name: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: File contents
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  content:
+                    type: string
+  /write:
+    post:
+      security:
+        - BridgeToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                path:
+                  type: string
+                content:
+                  type: string
+              required: [path, content]
+      responses:
+        '200':
+          description: Write result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+  /git:
+    post:
+      security:
+        - BridgeToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                op:
+                  type: string
+                  enum: [branch, commit, push]
+                args:
+                  type: object
+              required: [op, args]
+      responses:
+        '200':
+          description: Git result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  code:
+                    type: integer
+                  output_tail:
+                    type: string
+  /github/pr:
+    post:
+      security:
+        - BridgeToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                body:
+                  type: string
+                head:
+                  type: string
+                base:
+                  type: string
+              required: [head]
+      responses:
+        '200':
+          description: PR opened
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  url:
+                    type: string
