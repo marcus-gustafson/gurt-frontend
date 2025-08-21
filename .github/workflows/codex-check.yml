@@ -1,0 +1,31 @@
+name: codex-check
+
+on:
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - run: pip install pipenv
+      - run: make check
+
+  bridge:
+    if: contains(github.event.pull_request.labels.*.name, 'codex-autofix')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Ping bridge
+        run: |
+          if curl -fsS http://127.0.0.1:8000/health; then
+            echo "bridge reachable"
+          else
+            echo "bridge not reachable, skipping"
+          fi
