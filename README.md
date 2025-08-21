@@ -1,6 +1,14 @@
-# Gurt — Local‑first chat UI (MVP)
+# Gurt — Local‑first chat UI (Monorepo)
 
 Talk to your **local LLM** via a clean Next.js app. No Ollama. Works with any **OpenAI‑compatible** server (e.g., `llama.cpp --server`, **LM Studio** local server).
+
+This repository is structured as a monorepo:
+
+- `apps/web` – Next.js frontend
+- `apps/api` – Python backend (FastAPI)
+- `packages/shared` – shared TypeScript utilities
+- `actions_bridge` – local bridge for GPT Actions
+- `tests/e2e` – Playwright tests
 
 ## Quick start (Windows‑first)
 
@@ -14,16 +22,16 @@ B:\src\llama.cpp\build\bin\Release\llama-server.exe -m B:\models\gpt-oss-20b\gpt
 This exposes `http://localhost:8080/v1`.
 
 ### Option B — LM Studio
-- Open LM Studio → **Start Local Server**.  
+- Open LM Studio → **Start Local Server**.
 - Default URL is `http://localhost:1234/v1`.
 
 > The app auto‑detects 8080 first, then 1234. You can override in Settings or `.env`.
 
-2) **Install & run Gurt**
+2) **Install & run Gurt web**
 ```powershell
 # Node.js LTS required
-npm i
-npm run dev
+npm --prefix apps/web install
+npm --prefix apps/web run dev
 # open http://localhost:3000
 ```
 
@@ -57,7 +65,7 @@ NEXT_PUBLIC_DEFAULT_SYSTEM_PROMPT=You are Gurt, a private, local-first assistant
 - **Port already in use**: Change `--port`, then set the URL override in Settings.
 
 ## Remote access (optional; security note)
-You can expose the Next app or your model server via **Cloudflare Tunnel** or **Tailscale**. Be careful: exposing a model server publicly can be risky—prefer private tunnels and ACLs.
+You can expose the bridge or web app via **Cloudflare Tunnel** or **Tailscale**. Be careful: exposing a model server publicly can be risky—prefer private tunnels and ACLs.
 
 ## License
 MIT

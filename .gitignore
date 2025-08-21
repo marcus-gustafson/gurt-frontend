@@ -1,10 +1,9 @@
 # Dependencies
-/node_modules
+node_modules/
 
 # Next
-/.next
-/out
 .next/
+out/
 dist/
 
 # Env
