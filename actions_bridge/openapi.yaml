@@ -13,6 +13,66 @@ components:
       type: apiKey
       in: header
       name: X-Bridge-Token
+  schemas:
+    RunRequest:
+      type: object
+      required: [cmd]
+      properties:
+        cmd:
+          type: string
+          enum: [setup, test, lint, typecheck, e2e-real]
+    RunResponse:
+      type: object
+      properties:
+        ok: { type: boolean }
+        code: { type: integer }
+        output_tail: { type: string }
+
+    ReadResponse:
+      type: object
+      properties:
+        ok: { type: boolean }
+        content: { type: string }
+
+    WriteRequest:
+      type: object
+      required: [path, content]
+      properties:
+        path: { type: string }
+        content: { type: string }
+    WriteResponse:
+      type: object
+      properties:
+        ok: { type: boolean }
+
+    GitRequest:
+      type: object
+      required: [op]
+      properties:
+        op: { type: string, enum: [branch, commit, push] }
+        args: { type: object, additionalProperties: true }
+    GitResponse:
+      type: object
+      properties:
+        ok: { type: boolean }
+        code: { type: integer }
+        output_tail: { type: string }
+
+    PrRequest:
+      type: object
+      required: [head]
+      properties:
+        title: { type: string }
+        body:  { type: string }
+        head:  { type: string }
+        base:  { type: string }
+    PrResponse:
+      type: object
+      properties:
+        url:       { type: string, format: uri }
+        html_url:  { type: string, format: uri }
+        number:    { type: integer }
+        state:     { type: string }
 
 security:
   - BridgeToken: []
