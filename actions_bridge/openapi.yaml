@@ -1,163 +1,106 @@
 openapi: 3.1.0
 info:
-  title: Actions Bridge API
-  version: 1.0.0
+  title: Gurt Local Bridge
+  version: "1.0.0"
+
+# Replace with your live tunnel URL (no trailing slash)
 servers:
   - url: https://<YOUR_TUNNEL_DOMAIN>
+
 components:
   securitySchemes:
     BridgeToken:
       type: apiKey
       in: header
       name: X-Bridge-Token
+
+security:
+  - BridgeToken: []
+
 paths:
+  /health:
+    get:
+      security: []   # keep health open
+      responses:
+        "200": { description: OK }
   /run:
     post:
-      security:
-        - BridgeToken: []
+      operationId: post_run
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
+              required: [cmd]
               properties:
                 cmd:
                   type: string
-                  enum: [test, lint, typecheck, e2e-real]
-              required: [cmd]
+                  enum: [setup, test, lint, typecheck, e2e-real]
+            example: { "cmd": "test" }   # <= this makes Test send a body
       responses:
-        '200':
-          description: Command result
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  ok:
-                    type: boolean
-                  code:
-                    type: integer
-                  output_tail:
-                    type: string
-  /health:
-    get:
-      responses:
-        '200':
-          description: Health check
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  ok:
-                    type: boolean
+        "200": { description: OK }
   /read:
     get:
-      security:
-        - BridgeToken: []
+      operationId: get_read
       parameters:
         - in: query
           name: path
           required: true
-          schema:
-            type: string
+          schema: { type: string }
       responses:
-        '200':
-          description: File contents
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  ok:
-                    type: boolean
-                  content:
-                    type: string
+        "200": { description: OK }
   /write:
     post:
-      security:
-        - BridgeToken: []
+      operationId: post_write
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
-              properties:
-                path:
-                  type: string
-                content:
-                  type: string
               required: [path, content]
+              properties:
+                path: { type: string }
+                content: { type: string }
+            example: { "path": "README_LOCAL.md", "content": "hello" }
       responses:
-        '200':
-          description: Write result
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  ok:
-                    type: boolean
+        "200": { description: OK }
   /git:
     post:
-      security:
-        - BridgeToken: []
+      operationId: post_git
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
+              required: [op]
               properties:
                 op:
                   type: string
                   enum: [branch, commit, push]
                 args:
                   type: object
-              required: [op, args]
+                  additionalProperties: true
+            example: { "op": "commit", "args": { "message": "test" } }
       responses:
-        '200':
-          description: Git result
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  ok:
-                    type: boolean
-                  code:
-                    type: integer
-                  output_tail:
-                    type: string
+        "200": { description: OK }
   /github/pr:
     post:
-      security:
-        - BridgeToken: []
+      operationId: post_github_pr
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
-              properties:
-                title:
-                  type: string
-                body:
-                  type: string
-                head:
-                  type: string
-                base:
-                  type: string
               required: [head]
+              properties:
+                title: { type: string }
+                body:  { type: string }
+                head:  { type: string }
+                base:  { type: string }
+            example: { "head": "feature/bridge-test", "title": "Bridge PR", "body": "Opened from Action" }
       responses:
-        '200':
-          description: PR opened
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  url:
-                    type: string
+        "200": { description: OK }

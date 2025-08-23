@@ -11,7 +11,7 @@ from pydantic import BaseModel
 from . import github_pr
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-ALLOWED_CMDS = {"test", "lint", "typecheck", "e2e-real"}
+ALLOWED_CMDS = {"setup", "test", "lint", "typecheck", "e2e-real"}
 MAX_OUTPUT = 100_000
 MAX_DIFF_LINES = 800
 MAX_DELETES = 20
